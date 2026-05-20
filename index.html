@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الهدي — منصة رمضان</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050A14;--card:#0C1428;--card2:#0F1A30;--border:#1A2A45;
+  --gold:#D4A94A;--gold2:#F0C86A;--green:#22C55E;--red:#EF4444;
+  --blue:#3B82F6;--pink:#EC4899;--text:#E8EDF5;--muted:#4A5568;--sub:#8896A8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100vh;background:var(--bg);font-family:'Tajawal',sans-serif;color:var(--text);direction:rtl;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--gold)55;border-radius:2px;}
+input,textarea,select{font-family:'Tajawal',sans-serif;font-size:14px;}
+button{font-family:'Tajawal',sans-serif;cursor:pointer;border:none;outline:none;transition:all .18s;}
+button:hover{filter:brightness(1.1);}button:active{transform:scale(.97);}
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+@keyframes spRing{0%{transform:scale(.9);opacity:.2;}50%{transform:scale(1.06);opacity:.5;}100%{transform:scale(.9);opacity:.2;}}
+@keyframes spDot{0%,100%{transform:scale(.5);opacity:.3;}50%{transform:scale(1.3);opacity:1;}}
+@keyframes notifAnim{0%{opacity:0;transform:translateX(-50%) translateY(-20px);}15%,80%{opacity:1;transform:translateX(-50%) translateY(0);}100%{opacity:0;transform:translateX(-50%) translateY(-20px);}}
+@keyframes cfIn{from{transform:scale(.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes menuIn{from{transform:translateY(-8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+@keyframes checkPop{0%{transform:scale(0);}70%{transform:scale(1.25);}100%{transform:scale(1);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+/* Reusable */
+.fu{animation:fadeUp .4s ease forwards;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;}
+.ki-input{background:var(--card);border:1.5px solid var(--border);color:var(--text);border-radius:10px;padding:10px 14px;width:100%;outline:none;transition:border .2s;}
+.ki-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #D4A94A12;}
+.ki-btn{border-radius:10px;font-weight:700;padding:10px 20px;font-size:14px;transition:all .18s;}
+.ki-btn:hover{transform:translateY(-1px);}
+.ki-btn-gold{background:linear-gradient(135deg,var(--gold),#8B6220);color:var(--bg);}
+.ki-btn-outline{background:transparent;color:var(--sub);border:1px solid var(--border);}
+.ki-btn-red{background:#7f1d1d;color:#fca5a5;}
+.ki-btn-blue{background:#1e3a5f;color:#93c5fd;}
+.hov:hover{background:var(--card2)!important;transition:background .15s;}
+.task-row{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:all .15s;border-bottom:1px solid #1A2A4544;}
+.task-row:hover{background:#D4A94A09!important;}
+.ch:hover{transform:translateY(-3px);box-shadow:0 8px 24px #D4A94A12!important;transition:all .2s;}
+/* Splash */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;background-image:radial-gradient(ellipse 70% 50% at 50% 30%,#D4A94A0b,transparent 70%);}
+.sp-ring{position:absolute;border-radius:50%;border:1px solid #D4A94A22;animation:spRing 3s ease-in-out infinite;}
+/* Nav */
+#nav{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;}
+/* Pages */
+.page{display:none;max-width:940px;margin:0 auto;padding:16px 12px;}
+.page.active{display:block;animation:fadeUp .4s ease;}
+/* Grid days */
+#daysGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;}
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;cursor:pointer;transition:all .2s;position:relative;}
+/* Ham menu */
+#hamMenu{position:absolute;top:calc(100% + 8px);left:0;min-width:195px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 16px 48px #000c;animation:menuIn .2s ease;z-index:500;display:none;}
+#hamMenu.open{display:block;}
+/* Confirm */
+#confirmOverlay{position:fixed;inset:0;background:#000b;z-index:8888;display:none;align-items:center;justify-content:center;padding:16px;}
+#confirmOverlay.open{display:flex;}
+#confirmBox{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;max-width:340px;width:100%;box-shadow:0 24px 64px #000c;animation:cfIn .25s ease;}
+/* Notif */
+#notif{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9990;background:var(--card2);border:1px solid #D4A94A55;color:#fff;border-radius:14px;padding:11px 24px;font-weight:700;box-shadow:0 8px 32px #000a;white-space:nowrap;pointer-events:none;display:none;}
+#notif.show{display:block;animation:notifAnim 3s ease forwards;}
+/* Ring SVG */
+.ring-svg{flex-shrink:0;}
+/* Forum post */
+.feed-post{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.post-actions{border-top:1px solid var(--border);display:flex;}
+.post-action-btn{flex:1;background:transparent;color:var(--sub);border:none;padding:10px 0;font-size:12px;display:flex;align-items:center;justify-content:center;gap:5px;font-family:'Tajawal',sans-serif;font-weight:700;transition:all .2s;cursor:pointer;}
+.post-action-btn:hover{background:var(--card2);color:var(--gold);}
+.post-action-btn.liked{color:var(--red);}
+/* Tags */
+.pill{display:inline-flex;align-items:center;background:#D4A94A18;color:var(--gold);border:1px solid #D4A94A33;border-radius:20px;padding:2px 11px;font-size:11px;font-weight:700;white-space:nowrap;}
+/* Share modal */
+#shareModal{position:fixed;inset:0;background:#000b;z-index:8888;display:none;align-items:center;justify-content:center;padding:16px;}
+#shareModal.open{display:flex;}
+/* Progress bar */
+.pbar-wrap{background:var(--border);border-radius:5px;height:5px;flex:1;}
+.pbar{height:5px;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .6s ease;}
+/* Anon badge */
+.anon-badge{background:#1A2A45;color:var(--sub);border:1px solid var(--border);border-radius:20px;padding:2px 10px;font-size:11px;}
+</style>
+</head>
+<body>
+
+<!-- ════ SPLASH ════ -->
+<div id="splash">
+  <div class="sp-ring" style="width:300px;height:300px;"></div>
+  <div class="sp-ring" style="width:200px;height:200px;animation-delay:.5s;"></div>
+  <div id="splashLogo" style="opacity:0;transition:all .8s cubic-bezier(.34,1.56,.64,1);transform:scale(.5) translateY(30px)">
+    <svg id="sLogo" width="90" height="90" viewBox="0 0 100 100" fill="none" style="animation:float 3s ease-in-out infinite">
+      <defs><radialGradient id="g1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0C86A" stop-opacity=".3"/><stop offset="100%" stop-color="#F0C86A" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="50" cy="50" r="46" fill="url(#g1)"/>
+      <path d="M50 10 A40 40 0 1 0 90 50 A28 28 0 1 1 50 10Z" fill="#D4A94A" opacity=".92"/>
+      <polygon points="68,16 70,22 76,22 71,26 73,32 68,28 63,32 65,26 60,22 66,22" fill="#F0C86A"/>
+      <polygon points="78,38 79.5,43 85,43 80.5,46 82,51 78,48 74,51 75.5,46 71,43 76.5,43" fill="#F0C86A" opacity=".7"/>
+      <polygon points="38,38 40.5,46 48,46 42,50.5 44.5,58.5 38,54 31.5,58.5 34,50.5 28,46 35.5,46" fill="#F0C86A" opacity=".9"/>
+    </svg>
+  </div>
+  <div id="splashName" style="margin-top:20px;opacity:0;transform:translateY(20px);transition:all .6s ease .3s">
+    <div style="font-family:'Tajawal';font-weight:900;font-size:40px;color:var(--gold);text-align:center;letter-spacing:3px">الهدي</div>
+    <div style="color:var(--muted);font-size:12px;text-align:center;letter-spacing:4px;margin-top:3px">AL-HADI</div>
+  </div>
+  <div id="splashSub" style="margin-top:14px;opacity:0;transition:all .5s ease .6s;color:var(--sub);font-size:13px;text-align:center">رحلتك الروحية في ثلاثين يوماً مباركاً</div>
+  <div id="splashDots" style="position:absolute;bottom:60px;display:flex;gap:8px;opacity:0;transition:opacity .4s .6s">
+    <div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:spDot 1.2s ease-in-out infinite;"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:spDot 1.2s ease-in-out infinite;animation-delay:.2s"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:spDot 1.2s ease-in-out infinite;animation-delay:.4s"></div>
+  </div>
+</div>
+
+<!-- ════ NAV ════ -->
+<nav id="nav" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showPage('home')">
+    <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+      <path d="M50 10 A40 40 0 1 0 90 50 A28 28 0 1 1 50 10Z" fill="#D4A94A" opacity=".92"/>
+      <polygon points="68,16 70,22 76,22 71,26 73,32 68,28 63,32 65,26 60,22 66,22" fill="#F0C86A"/>
+      <polygon points="38,38 40.5,46 48,46 42,50.5 44.5,58.5 38,54 31.5,58.5 34,50.5 28,46 35.5,46" fill="#F0C86A" opacity=".9"/>
+    </svg>
+    <div>
+      <div style="font-family:'Tajawal';font-weight:900;font-size:17px;color:var(--gold);letter-spacing:2px">الهدي</div>
+      <div style="font-size:8px;color:var(--muted);letter-spacing:3px">AL-HADI</div>
+    </div>
+  </div>
+  <!-- Ham btn -->
+  <div style="position:relative" id="hamWrap">
+    <button onclick="toggleHam()" id="hamBtn" style="background:transparent;border:1px solid var(--border);color:var(--sub);width:40px;height:40px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0">
+      <span class="hbar" style="display:block;width:18px;height:2px;background:currentColor;border-radius:2px;transition:all .25s"></span>
+      <span class="hbar" style="display:block;width:18px;height:2px;background:currentColor;border-radius:2px;transition:all .25s"></span>
+      <span class="hbar" style="display:block;width:18px;height:2px;background:currentColor;border-radius:2px;transition:all .25s"></span>
+    </button>
+    <div id="hamMenu">
+      <div id="hamUserCard" style="padding:12px 14px;background:var(--card2);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center"></div>
+      <button class="ham-item" onclick="goHam('home')"  style="width:100%;text-align:right;background:transparent;color:var(--sub);border:none;padding:11px 14px;font-size:13px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1A2A4533;font-family:'Tajawal';font-weight:700"><span>🏠</span><span>الرئيسية</span></button>
+      <button class="ham-item" onclick="goHam('forum')" style="width:100%;text-align:right;background:transparent;color:var(--sub);border:none;padding:11px 14px;font-size:13px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1A2A4533;font-family:'Tajawal';font-weight:700"><span>💬</span><span>المجتمع</span></button>
+      <button class="ham-item" onclick="goHam('profile')" style="width:100%;text-align:right;background:transparent;color:var(--sub);border:none;padding:11px 14px;font-size:13px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1A2A4533;font-family:'Tajawal';font-weight:700"><span>👤</span><span>ملفي الشخصي</span></button>
+      <button id="adminNavBtn" class="ham-item" onclick="goHam('admin')" style="display:none;width:100%;text-align:right;background:transparent;color:var(--sub);border:none;padding:11px 14px;font-size:13px;align-items:center;gap:10px;border-bottom:1px solid #1A2A4533;font-family:'Tajawal';font-weight:700"><span>🛡️</span><span>لوحة الإدارة</span></button>
+      <button onclick="confirmAction('هل أنت متأكد من تسجيل الخروج؟',doLogout)" style="width:100%;text-align:right;background:transparent;color:var(--red);border:none;padding:11px 14px;font-size:13px;display:flex;align-items:center;gap:10px;font-family:'Tajawal';font-weight:700"><span>🚪</span><span>تسجيل الخروج</span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════ NOTIF ════ -->
+<div id="notif"></div>
+
+<!-- ════ CONFIRM DIALOG ════ -->
+<div id="confirmOverlay">
+  <div id="confirmBox">
+    <div style="font-size:36px;text-align:center;margin-bottom:12px">⚠️</div>
+    <div id="confirmMsg" style="color:var(--text);font-size:15px;font-weight:700;text-align:center;margin-bottom:20px;line-height:1.6"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="confirmNo()" class="ki-btn ki-btn-outline" style="flex:1;padding:11px 0">لا، إلغاء</button>
+      <button onclick="confirmYes()" class="ki-btn ki-btn-red" style="flex:1;padding:11px 0">نعم، تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SHARE MODAL ════ -->
+<div id="shareModal">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;max-width:360px;width:100%;box-shadow:0 24px 64px #000c;animation:cfIn .25s ease">
+    <div style="font-weight:900;color:var(--gold);font-size:17px;margin-bottom:16px">↗️ مشاركة المنشور</div>
+    <div id="shareContent" style="background:var(--card2);border-radius:12px;padding:14px;margin-bottom:16px;color:var(--sub);font-size:13px;line-height:1.7;max-height:120px;overflow:hidden"></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="copyShareLink()" class="ki-btn" style="background:#1e3a5f;color:#93c5fd;padding:11px 0;font-size:14px">📋 نسخ المنشور</button>
+      <button onclick="closeShare()" class="ki-btn ki-btn-outline" style="padding:11px 0;font-size:14px">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: LOGIN/REGISTER ════ -->
+<div class="page active" id="page-auth" style="max-width:420px">
+  <div style="text-align:center;margin-bottom:26px;padding-top:40px">
+    <div style="animation:float 3s ease-in-out infinite;display:inline-block;margin-bottom:10px">
+      <svg width="70" height="70" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="46" fill="url(#g1)"/>
+        <path d="M50 10 A40 40 0 1 0 90 50 A28 28 0 1 1 50 10Z" fill="#D4A94A" opacity=".92"/>
+        <polygon points="68,16 70,22 76,22 71,26 73,32 68,28 63,32 65,26 60,22 66,22" fill="#F0C86A"/>
+        <polygon points="38,38 40.5,46 48,46 42,50.5 44.5,58.5 38,54 31.5,58.5 34,50.5 28,46 35.5,46" fill="#F0C86A" opacity=".9"/>
+      </svg>
+    </div>
+    <div style="font-family:'Tajawal';font-weight:900;font-size:38px;color:var(--gold);letter-spacing:3px">الهدي</div>
+    <div style="color:var(--muted);font-size:11px;letter-spacing:4px;margin-top:3px">AL-HADI</div>
+    <div style="color:var(--sub);font-size:12px;margin-top:7px">رحلتك الروحية في ثلاثين يوماً مباركاً</div>
+  </div>
+  <div class="card" style="border-radius:20px;padding:26px;box-shadow:0 24px 64px #D4A94A0a">
+    <div style="display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:20px;gap:4px">
+      <button id="tabLogin" onclick="switchAuthTab('login')" class="ki-btn" style="flex:1;padding:10px 0;border-radius:10px;background:var(--gold);color:var(--bg);font-size:14px">تسجيل الدخول</button>
+      <button id="tabReg"   onclick="switchAuthTab('reg')"   class="ki-btn" style="flex:1;padding:10px 0;border-radius:10px;background:transparent;color:var(--muted);font-size:14px">حساب جديد</button>
+    </div>
+    <div id="authErr" style="display:none;background:#7f1d1d22;border:1px solid #EF444444;color:#fca5a5;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px"></div>
+    <!-- Login form -->
+    <div id="formLogin" style="display:flex;flex-direction:column;gap:13px">
+      <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">البريد الإلكتروني</label><input class="ki-input" id="liEmail" placeholder="example@mail.com" type="email"/></div>
+      <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">كلمة المرور</label><input class="ki-input" id="liPw" placeholder="••••••" type="password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button onclick="doLogin()" class="ki-btn ki-btn-gold" style="padding:13px 0;font-size:15px;margin-top:4px">دخول</button>
+    </div>
+    <!-- Register form -->
+    <div id="formReg" style="display:none;flex-direction:column;gap:12px">
+      <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">الاسم الكامل *</label><input class="ki-input" id="riName" placeholder="محمد أحمد"/></div>
+      <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">البريد الإلكتروني *</label><input class="ki-input" id="riEmail" placeholder="example@mail.com" type="email"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">رقم الهاتف</label><input class="ki-input" id="riPhone" placeholder="05x"/></div>
+        <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">العمر</label><input class="ki-input" id="riAge" placeholder="20" type="number"/></div>
+      </div>
+      <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">كلمة المرور *</label><input class="ki-input" id="riPw" placeholder="••••••" type="password"/></div>
+      <div><label style="color:var(--sub);font-size:12px;display:block;margin-bottom:5px">تأكيد كلمة المرور *</label><input class="ki-input" id="riPw2" placeholder="••••••" type="password" onkeydown="if(event.key==='Enter')doRegister()"/></div>
+      <button onclick="doRegister()" class="ki-btn ki-btn-gold" style="padding:13px 0;font-size:15px;margin-top:4px">إنشاء الحساب</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: HOME ════ -->
+<div class="page" id="page-home">
+  <div id="heroBanner" class="card" style="border-radius:20px;padding:22px 20px;margin-bottom:18px;background:linear-gradient(135deg,var(--card2),var(--card));position:relative;overflow:hidden">
+    <div style="position:absolute;top:-50px;left:-50px;width:180px;height:180px;background:#D4A94A07;border-radius:50%;pointer-events:none"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
+      <div>
+        <div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:4px">أهلاً وسهلاً</div>
+        <div style="font-weight:900;font-size:20px;margin-bottom:12px" id="heroName">— 🌙</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap" id="heroStats"></div>
+      </div>
+      <svg id="heroRing" class="ring-svg" width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="var(--border)" stroke-width="8"/><circle id="heroRingFill" cx="45" cy="45" r="38" fill="none" stroke="var(--gold)" stroke-width="8" stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round" transform="rotate(-90 45 45)" style="transition:stroke-dashoffset 1s ease"/><text id="heroRingTxt" x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="var(--gold)" font-size="15" font-weight="800" font-family="Tajawal">0%</text></svg>
+    </div>
+  </div>
+  <div style="font-weight:900;color:var(--gold);font-size:15px;margin-bottom:12px">📅 الأيام الثلاثون المباركة</div>
+  <div id="daysGrid"></div>
+</div>
+
+<!-- ════ PAGE: DAY ════ -->
+<div class="page" id="page-day" style="max-width:660px">
+  <button onclick="showPage('home')" class="ki-btn ki-btn-outline" style="margin-bottom:14px;padding:7px 14px;font-size:13px">← رجوع</button>
+  <div class="card" style="border-radius:18px;padding:20px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      
